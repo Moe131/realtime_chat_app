@@ -11,8 +11,8 @@ export default function Dashboard(){
     return (
         <div>
             Dashboard
-            <Button disabled={loading} title="click" onClick={() => setLoading(true)}/>
-            <Button title="hello" onClick={() => setLoading(false)}/>
+            <Button disabled={loading} onClick={() => setLoading(true)}> Hello</Button>
+            <Button onClick={() => setLoading(false)}/>
         </div>
     )
 }

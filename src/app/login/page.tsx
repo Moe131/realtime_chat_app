@@ -4,13 +4,23 @@ import Button from "@/components/ui/Button";
 import React from "react";
 import googleLogo from "../../assets/google.png"
 import Image from "next/image";
+import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function Login(){
     const [isLoading, setLoading] = React.useState(false)
 
     async function SignInWithGoogle(){
         setLoading(true)
-        console.log("Loged ins")
+        try {
+            await signIn("google")
+        }
+        catch (error) {
+            toast.error("Something wrong")
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     return (

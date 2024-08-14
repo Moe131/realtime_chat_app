@@ -6,16 +6,19 @@ import React , {ReactNode} from "react"
 import logo from "../../assets/logo.png"
 import addIcon from "../../assets/addIcon.png"
 import Image, { StaticImageData } from "next/image"
+import SignOutButton from "@/components/SignOutButton"
 
 interface LayoutProps {
     children : ReactNode
 }
+
 interface sideBarOption {
     id: number
     name :string
     href: string
     Icon: StaticImageData
 }
+
 const sideBarOptions:sideBarOption[] = [
     {
     id : 1,
@@ -43,9 +46,7 @@ export default async function Layout ({children}: LayoutProps){
 
                 <nav className="flex flex-1 flex-col">
                     <ul role="list" className="flex flex1 flex-col gap-y-7">
-                        
                         <li> Chats that user have</li>
-
                         <li>
                             <div className="text-xs font-semibold leading-6 text-gray-400">
                                 Overview
@@ -85,12 +86,14 @@ export default async function Layout ({children}: LayoutProps){
                                     <span className="text-xs text-zinc-400" aria-hidden="true">{session.user.email}</span>
                                 </div> 
                             </div>
+                            <SignOutButton />
                         </li>
-
                     </ul>
                 </nav>
             </div>
-            {children}
+            <aside className="max-h-screen container py-16 md:py-12 w-full">
+                {children}
+            </aside>
         </div>
     )
 }

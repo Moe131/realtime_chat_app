@@ -7,7 +7,7 @@ import React from "react";
 export default async function Dashboard(){
     const session = await getServerSession(authOptions) 
     return (
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="max-w-sm flex-col justify-center px-6 py-12 lg:px-8">
            {JSON.stringify(session)}
         </div>
     )

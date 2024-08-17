@@ -1,12 +1,14 @@
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import React , {ReactNode} from "react"
 import logo from "../../assets/logo.png"
 import addIcon from "../../assets/addIcon.png"
+import friendRequestLogo from "../../assets/friendRequests.png"
 import Image, { StaticImageData } from "next/image"
 import SignOutButton from "@/components/SignOutButton"
+import { redis_helper } from "../api/friends/add/route"
 
 interface LayoutProps {
     children : ReactNode
@@ -31,7 +33,9 @@ const sideBarOptions:sideBarOption[] = [
 export default async function Layout ({children}: LayoutProps){
     const session = await getServerSession(authOptions)
     if (!session)
-        return notFound()
+        redirect("/login")
+
+    const unseenFriendRequests = (await redis_helper("smembers/user:"+session.user.id+":friend_requests")).length
 
     return (
         <div className="w-full flex h-screen">
@@ -69,6 +73,18 @@ export default async function Layout ({children}: LayoutProps){
                             </ul>
                         </li>
 
+                        <li>
+                            <Link href="dashboard/requests"
+                                className="-mx-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            >
+                                <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">
+                                    <Image className="w-5 h-5" src={friendRequestLogo} alt="Icon" />
+                                </span>
+                                <span className="trunctuate">Friend Requests</span>
+                                { unseenFriendRequests>0 ? <span className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenFriendRequests}</span> : null}
+                            </Link>
+                        </li>
+
                         <li className="-mx-6 mt-auto flex items-center">
                             <div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
                                 <div className="relative h-8 w-8 bg-gray-50">
@@ -81,13 +97,14 @@ export default async function Layout ({children}: LayoutProps){
                                     />
                                 </div>
                                 <span className="sr-only">Your Profile</span>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col max-w-40">
                                     <span aria-hidden="true"> {session.user.name}</span>
-                                    <span className="text-xs text-zinc-400" aria-hidden="true">{session.user.email}</span>
+                                    <span className="text-ellipsis overflow-hidden ... text-xs text-zinc-400" aria-hidden="true">{session.user.email}</span>
                                 </div> 
                             </div>
                             <SignOutButton />
                         </li>
+
                     </ul>
                 </nav>
             </div>

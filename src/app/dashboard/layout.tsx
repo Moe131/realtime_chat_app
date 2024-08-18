@@ -32,10 +32,9 @@ const sideBarOptions:sideBarOption[] = [
 
 export default async function Layout ({children}: LayoutProps){
     const session = await getServerSession(authOptions)
-    if (!session)
-        redirect("/login")
+    if (!session) redirect("/login")
 
-    const unseenFriendRequests = (await redis_helper("smembers/user:"+session.user.id+":friend_requests")).length
+    const unseenFriendRequests = ((await redis_helper("smembers/user:"+session.user.id+":friend_requests")) as User[] ).length 
 
     return (
         <div className="w-full flex h-screen">
@@ -74,7 +73,7 @@ export default async function Layout ({children}: LayoutProps){
                         </li>
 
                         <li>
-                            <Link href="dashboard/requests"
+                            <Link href="/dashboard/requests"
                                 className="-mx-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
                             >
                                 <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">

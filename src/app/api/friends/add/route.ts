@@ -46,7 +46,7 @@ export async function POST(req: Request){
 
 
 // helper function
-export async function redis_helper(command:string){
+export async function redis_helper(command:string , ...args: (string|number)[]){
     const RESTResponse = await fetch(process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL+"/" + command,
         {
             headers : {
@@ -54,6 +54,6 @@ export async function redis_helper(command:string){
             },
             cache : "no-store"
         })  
-        const data = await RESTResponse.json() as {result : string}
+        const data = await RESTResponse.json() 
         return data.result
 }

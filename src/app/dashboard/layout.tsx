@@ -9,6 +9,7 @@ import friendRequestLogo from "../../assets/friendRequests.png"
 import Image, { StaticImageData } from "next/image"
 import SignOutButton from "@/components/SignOutButton"
 import { redis_helper } from "../api/friends/add/route"
+import SidebarChatList from "@/components/SidebarChatList"
 
 interface LayoutProps {
     children : ReactNode
@@ -30,12 +31,20 @@ const sideBarOptions:sideBarOption[] = [
     }
 ]
 
+export async function getFriendsByUserId(userId:string) {
+    const friendIds = await redis_helper("smembers/user:"+userId+":friends") as string[]
+    const friends : User[] = await Promise.all(
+        friendIds.map(async (friendId) => JSON.parse(await redis_helper("get/user:"+friendId)) )
+    )
+    return friends
+}
+
 export default async function Layout ({children}: LayoutProps){
     const session = await getServerSession(authOptions)
     if (!session) redirect("/login")
-
+    
     const unseenFriendRequests = ((await redis_helper("smembers/user:"+session.user.id+":friend_requests")) as User[] ).length 
-
+    const friends = await getFriendsByUserId(session.user.id)
     return (
         <div className="w-full flex h-screen">
             <div className="flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
@@ -43,13 +52,16 @@ export default async function Layout ({children}: LayoutProps){
                     <Image src={logo} alt="logo" className="h-8 w-auto text-indigo-600"/>
                     <h1 className="text-xl px-3 s:text-s"> Realtime Chat</h1>
                 </Link>
+                
                 <div className="text-xs font-semibold leading-6 text-gray-400">
                     Your Chats
                 </div>
 
                 <nav className="flex flex-1 flex-col">
                     <ul role="list" className="flex flex1 flex-col gap-y-7">
-                        <li> Chats that user have</li>
+                        <li> 
+                            <SidebarChatList sessionId={session.user.id} friends={friends}/>
+                        </li>
                         <li>
                             <div className="text-xs font-semibold leading-6 text-gray-400">
                                 Overview
@@ -69,20 +81,20 @@ export default async function Layout ({children}: LayoutProps){
                                         </li>
                                     )
                                 })}
+                                <li>
+                                    <Link href="/dashboard/requests"
+                                        className="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                    >
+                                        <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">
+                                            <Image className="w-5 h-5" src={friendRequestLogo} alt="Icon" />
+                                        </span>
+                                        <span className="trunctuate">Friend Requests</span>
+                                        { unseenFriendRequests>0 ? <span className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenFriendRequests}</span> : null}
+                                    </Link>
+                                </li>
                             </ul>
                         </li>
 
-                        <li>
-                            <Link href="/dashboard/requests"
-                                className="-mx-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                            >
-                                <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">
-                                    <Image className="w-5 h-5" src={friendRequestLogo} alt="Icon" />
-                                </span>
-                                <span className="trunctuate">Friend Requests</span>
-                                { unseenFriendRequests>0 ? <span className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenFriendRequests}</span> : null}
-                            </Link>
-                        </li>
 
                         <li className="-mx-6 mt-auto flex items-center">
                             <div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">

@@ -21,7 +21,7 @@ export default function FriendRequests({sessionId, requests}:FriendRequestsProps
     }
 
     async function denyFriend(senderId:string,  ){
-        //await axios.post("/api/requests/deny", {id: senderId})
+        await axios.post("/api/requests/deny", {id: senderId})
         setFriendRequests ( friendRequests.filter(
             (r) => r.senderId !== senderId
         ))
@@ -45,6 +45,7 @@ export default function FriendRequests({sessionId, requests}:FriendRequestsProps
                     </button>
                     <button
                         className="w-8 h-8 bg-red-600 hover:bg-red-700 grid place-items-center rounded-full transition hover:shadow-md"
+                        onClick={()=>denyFriend(req.senderId)}
                     >
                         <X className="font-semibold text-white w-6 h-6" />
                     </button>

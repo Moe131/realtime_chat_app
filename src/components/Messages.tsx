@@ -1,13 +1,16 @@
 "use client"
 import { format } from "date-fns"
+import Image from "next/image"
 import { useRef, useState } from "react"
 
 interface Props {
     initialMessages : Message[]
     sessionId : string
+    sessionImg : string | null | undefined
+    partnerImg : string
 }
 
-export default function Messages({initialMessages, sessionId}:Props){
+export default function Messages({initialMessages, sessionId, sessionImg, partnerImg}:Props){
     const [messages, setMessages] = useState<Message[]>(initialMessages)
     const scrollDownRef = useRef<HTMLDivElement | null>(null)
 
@@ -34,6 +37,15 @@ export default function Messages({initialMessages, sessionId}:Props){
                                         {message.text + " "}
                                         <span className="ml-2 text-xs text-gray-400">{formatTimestap(message.timestamp)}</span>
                                     </span>
+                                </div>
+                                <div className={"relative w-6 h-6 " + (isCurrentUser ? " order-2 " : " orders-1 ") + (hasNextMessageFromSameUser ? " invisible " : "") }>
+                                    <Image 
+                                        fill 
+                                        src={isCurrentUser ? sessionImg || "" : partnerImg}
+                                        alt="Profile Pictre"
+                                        referrerPolicy ="no-referrer"
+                                        className="rounded-full"
+                                    />
                                 </div>
                             </div>
                         </div>

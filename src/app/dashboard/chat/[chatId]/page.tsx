@@ -17,8 +17,7 @@ async function getChatMessages(chatId: string) {
     try {
         const results : string[] = await redis_helper("zrange/chat:"+ chatId + ":messages/0/-1")
         const dbMessages = results.map((message) => JSON.parse(message) as Message)
-        const reversedDbMessages = dbMessages.reverse()
-        return reversedDbMessages
+        return dbMessages
     }catch(error){
         console.log(error)
         notFound()
@@ -64,7 +63,7 @@ export default async function Chat({params} : PageProps){
                 </div>
             </div>
 
-            <Messages sessionId={session.user.id} initialMessages={initialMessages} />
+            <Messages sessionId={session.user.id} partnerImg={chatPartner.image} sessionImg={session.user.image} initialMessages={initialMessages} />
             <ChatInput chatPartner={chatPartner} chatId={chatId}/>
         </div>
     )

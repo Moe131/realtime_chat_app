@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -37,11 +38,14 @@ export default function SidebarChatList( {friends, sessionId}: PageProps){
                             href={"/dashboard/chat/" + chatLinkConstructor(sessionId, friend.id)}
                             className="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         >
-                        {friend.name}
-                        {unseenMessagesCount>0 ?
-                        <div className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenMessagesCount}</div>
-                        : null
-                        }
+                            <span className="relative h-6 w-6">
+                                <Image fill className="rounded-full" src={friend.image} alt="Icon" />
+                            </span>
+                            {friend.name}
+                            {unseenMessagesCount>0 ?
+                            <div className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenMessagesCount}</div>
+                            : null
+                            }
                         </a>
                     </li> 
                     )

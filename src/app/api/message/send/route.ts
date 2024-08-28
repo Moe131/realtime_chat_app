@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { redis_helper } from "../../friends/add/route"
 import { db } from "@/lib/db"
 import { nanoid } from "nanoid"
+import { pusherServer } from "@/lib/pusher"
 
 export async function POST(req:Request){
     try {
@@ -36,6 +37,10 @@ export async function POST(req:Request){
         }
 
         // send the message
+        // send to web scoket
+        pusherServer.trigger("chat__"+chatId, "messages", message)
+
+        // store message in database
         db.zadd("chat:"+chatId+":messages", {
             score : timestamp,
             member : JSON.stringify(message)

@@ -1,20 +1,34 @@
 "use client"
+import { pusherClient } from "@/lib/pusher"
 import { format } from "date-fns"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface Props {
     initialMessages : Message[]
     sessionId : string
     sessionImg : string | null | undefined
     partnerImg : string
+    chatId : string
 }
 
-export default function Messages({initialMessages, sessionId, sessionImg, partnerImg}:Props){
+export default function Messages({initialMessages, sessionId, sessionImg, partnerImg, chatId}:Props){
     const [messages, setMessages] = useState<Message[]>(initialMessages)
     const scrollDownRef = useRef<HTMLDivElement | null>(null)
 
-    function formatTimestap(timestamp:number){
+    useEffect( ()=> {
+        pusherClient.subscribe("chat__"+chatId)
+        function messageHandler(message:Message){
+            setMessages( (prev)=> [...prev, message])
+        }
+        pusherClient.bind("messages", messageHandler)
+        return () => {
+            pusherClient.unsubscribe("chat__"+chatId)
+            pusherClient.unbind("messages", messageHandler)
+        }
+    }, []) 
+
+    function formatTimestamp(timestamp:number){
         return format(timestamp, "HH:mm")
     }
 
@@ -35,7 +49,7 @@ export default function Messages({initialMessages, sessionId, sessionImg, partne
                                 <div className={"flex flex-col space-y-2 text-base max-w-xs mx-2 " + (isCurrentUser ? "order-1 items-end" : "order-2 items-start")}>
                                     <span className={"px-4 py-2 rounded-lg inline-block " + (isCurrentUser ? " bg-indigo-600 text-white " : " bg-gray-200 text-gray-900 ") + (!hasNextMessageFromSameUser && isCurrentUser? " rounded-br-none " : " ") + (!hasNextMessageFromSameUser && !isCurrentUser ? " rounded-bl-none " : " ")}>
                                         {message.text + " "}
-                                        <span className="ml-2 text-xs text-gray-400">{formatTimestap(message.timestamp)}</span>
+                                        <span className="ml-2 text-xs text-gray-400">{formatTimestamp(message.timestamp)}</span>
                                     </span>
                                 </div>
                                 <div className={"relative w-6 h-6 " + (isCurrentUser ? " order-2 " : " orders-1 ") + (hasNextMessageFromSameUser ? " invisible " : "") }>

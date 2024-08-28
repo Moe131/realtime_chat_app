@@ -63,7 +63,7 @@ export default async function Chat({params} : PageProps){
                 </div>
             </div>
 
-            <Messages sessionId={session.user.id} partnerImg={chatPartner.image} sessionImg={session.user.image} initialMessages={initialMessages} />
+            <Messages sessionId={session.user.id} partnerImg={chatPartner.image} sessionImg={session.user.image} initialMessages={initialMessages} chatId={chatId}/>
             <ChatInput chatPartner={chatPartner} chatId={chatId}/>
         </div>
     )

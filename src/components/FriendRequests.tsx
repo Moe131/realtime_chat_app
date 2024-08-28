@@ -3,6 +3,7 @@
 import { pusherClient } from "@/lib/pusher";
 import axios from "axios";
 import { Check, UserPlus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 
@@ -13,6 +14,7 @@ interface FriendRequestsProps {
 
 export default function FriendRequests({sessionId, requests}:FriendRequestsProps) {
     const [friendRequests, setFriendRequests] = useState(requests)
+    const router = useRouter()
     useEffect( ()=> {
         pusherClient.subscribe( "user__"+ sessionId+"__friend_requests")
         function friendRequestHandler(newRequest : FriendRequest){
@@ -30,6 +32,7 @@ export default function FriendRequests({sessionId, requests}:FriendRequestsProps
         setFriendRequests ( friendRequests.filter(
             (r) => r.senderId !== senderId
         ))
+        router.refresh()
     }
 
     async function denyFriend(senderId:string,  ){
@@ -37,6 +40,7 @@ export default function FriendRequests({sessionId, requests}:FriendRequestsProps
         setFriendRequests ( friendRequests.filter(
             (r) => r.senderId !== senderId
         ))
+        router.refresh()
     }
     
     return(

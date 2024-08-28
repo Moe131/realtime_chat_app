@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { db } from "@/lib/db"
+import { pusherServer } from "@/lib/pusher"
 
 
 export async function POST(req: Request){
@@ -35,7 +36,17 @@ export async function POST(req: Request){
         if (isAlreadyFriends )
             return new Response("Already friends with this user.", {status:400})
         
+    
         // valid request
+
+        // send it to pusher
+        const newRequest = {
+            senderId: session.user.id,
+            senderEmail : session.user.email
+        } as FriendRequest
+        pusherServer.trigger("user__"+idToAdd+"__friend_requests", "friend_requests", newRequest)
+            
+        //  add to redis database
         db.sadd("user:" + idToAdd + ":friend_requests", session.user.id)
         return new Response("OK")
 
@@ -47,10 +58,10 @@ export async function POST(req: Request){
 
 // helper function
 export async function redis_helper(command:string , ...args: (string|number)[]){
-    const RESTResponse = await fetch(process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL+"/" + command,
+    const RESTResponse = await fetch(process.env.UPSTASH_REDIS_REST_URL+"/" + command,
         {
             headers : {
-                Authorization : "Bearer " + process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN
+                Authorization : "Bearer " + process.env.UPSTASH_REDIS_REST_TOKEN
             },
             cache : "no-store"
         })  

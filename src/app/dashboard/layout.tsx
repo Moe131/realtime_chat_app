@@ -5,11 +5,11 @@ import { notFound, redirect } from "next/navigation"
 import React , {ReactNode} from "react"
 import logo from "../../assets/logo.png"
 import addIcon from "../../assets/addIcon.png"
-import friendRequestLogo from "../../assets/friendRequests.png"
 import Image, { StaticImageData } from "next/image"
 import SignOutButton from "@/components/SignOutButton"
 import { redis_helper } from "../api/friends/add/route"
 import SidebarChatList from "@/components/SidebarChatList"
+import FriendRequestSidebar from "@/components/FriendRequestSidebar"
 
 interface LayoutProps {
     children : ReactNode
@@ -82,15 +82,7 @@ export default async function Layout ({children}: LayoutProps){
                                     )
                                 })}
                                 <li>
-                                    <Link href="/dashboard/requests"
-                                        className="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                    >
-                                        <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">
-                                            <Image className="w-5 h-5" src={friendRequestLogo} alt="Icon" />
-                                        </span>
-                                        <span className="trunctuate">Friend Requests</span>
-                                        { unseenFriendRequests>0 ? <span className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">{unseenFriendRequests}</span> : null}
-                                    </Link>
+                                    <FriendRequestSidebar unseenFriendRequests={unseenFriendRequests} sessionId={session.user.id} />
                                 </li>
                             </ul>
                         </li>

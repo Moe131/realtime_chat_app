@@ -10,7 +10,7 @@ export default async function Requests(){
     if (!session) redirect("/login")
 
     // IDs of people who sent freind requests to this user
-    const requestSenderIDs = (await redis_helper("smembers/user:"+ session.user.id + ":friend_requests")) as String[]
+    const requestSenderIDs = (await redis_helper("smembers/user:"+ session.user.id + ":friend_requests")) as string[]
     const incomingFriendRequests = await Promise.all(
         requestSenderIDs.map( async (id) => {
         const sender = await redis_helper("get/user:"+id) as string

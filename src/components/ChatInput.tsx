@@ -17,6 +17,7 @@ export default function ChatInput({chatPartner, chatId}: Props){
     const [Loading, setLoading] = useState<boolean>(false)
 
     async function sendMessage(){
+        if (!input) return 
         setLoading(true)
         try {
             await axios.post("/api/message/send", {text: input, chatId})

@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redis_helper } from "../../friends/add/route"
 import { db } from "@/lib/db"
+import { pusherServer } from "@/lib/pusher"
 
 export async function POST(req: Request){
     try {
@@ -21,6 +22,10 @@ export async function POST(req: Request){
         const hasFriendRequest = await  redis_helper("sismember/user:"+session.user.id+":friend_requests/" +id)
         if (! hasFriendRequest)
             return new Response("No Friend Request between users", {status : 400})
+
+
+        // Notfy partner of added friemd
+        pusherServer.trigger("user__"+id+"__friends", "new_friend","")
 
         // Successfully added as friend
         await db.sadd("user:" + session.user.id + ":friends", id)

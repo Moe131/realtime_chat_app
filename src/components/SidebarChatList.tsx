@@ -23,7 +23,7 @@ export default function SidebarChatList( {friends, sessionId}: PageProps){
 
     useEffect(()=> {
         pusherClient.subscribe("user__"+ sessionId + "__chats")
-        pusherClient.subscribe("users__"+sessionId+"__friends")
+        pusherClient.subscribe("user__"+sessionId+"__friends")
 
         function chatHandler(newChat:any){
             const shouldNotify = pathname !== "/dashboard/chat/"+ chatLinkConstructor(sessionId, newChat.senderId)
@@ -52,7 +52,9 @@ export default function SidebarChatList( {friends, sessionId}: PageProps){
 
         return () => {
             pusherClient.unsubscribe("user__"+ sessionId + "__chats")
-            pusherClient.unsubscribe("users__"+sessionId+"__friends")
+            pusherClient.unsubscribe("user__"+sessionId+"__friends")
+            pusherClient.unbind("new_message", chatHandler)
+            pusherClient.unbind("new_friend", newFriendHandler)
         }
     }, [pathname, router, sessionId])
 

@@ -1,7 +1,10 @@
 "use client"
+import { pusherClient } from "@/lib/pusher"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import UnseenChatToast from "./UnseenChatToast"
 
 interface PageProps {
     friends : User[]
@@ -17,6 +20,41 @@ export default function SidebarChatList( {friends, sessionId}: PageProps){
     const router = useRouter()
     const pathname = usePathname()
     const [unseenMessages, setUnseenMessages] = useState<Message[]>([])
+
+    useEffect(()=> {
+        pusherClient.subscribe("user__"+ sessionId + "__chats")
+        pusherClient.subscribe("users__"+sessionId+"__friends")
+
+        function chatHandler(newChat:any){
+            const shouldNotify = pathname !== "/dashboard/chat/"+ chatLinkConstructor(sessionId, newChat.senderId)
+            if (shouldNotify) {
+                toast.custom((t) => (
+                    <UnseenChatToast
+                      t={t}
+                      sessionId={sessionId}
+                      senderId={newChat.senderId}
+                      senderImg={newChat.senderImg}
+                      senderMessage={newChat.text}
+                      senderName={newChat.senderName}
+                    />
+                  ))
+                  setUnseenMessages((prev) => [...prev, newChat])
+                }
+            else
+                return
+        }
+
+        function newFriendHandler(){
+           router.refresh()
+        }
+        pusherClient.bind("new_message", chatHandler)
+        pusherClient.bind("new_friend", newFriendHandler)
+
+        return () => {
+            pusherClient.unsubscribe("user__"+ sessionId + "__chats")
+            pusherClient.unsubscribe("users__"+sessionId+"__friends")
+        }
+    }, [pathname, router, sessionId])
 
     useEffect( ()=> {
         if (pathname?.includes("chat")){

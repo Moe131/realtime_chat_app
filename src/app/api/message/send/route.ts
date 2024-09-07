@@ -40,6 +40,12 @@ export async function POST(req:Request){
         // send to web scoket
         pusherServer.trigger("chat__"+chatId, "messages", message)
 
+        pusherServer.trigger("user__"+partnerId+"__chats", "new_message", {
+            ...message,
+            senderImg : session.user.image,
+            senderName : session.user.name
+            })
+
         // store message in database
         db.zadd("chat:"+chatId+":messages", {
             score : timestamp,

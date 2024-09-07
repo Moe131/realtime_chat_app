@@ -19,7 +19,7 @@ export default async function Requests(){
         }))
 
     return (
-        <main className="max-w-lg mx-auto py-8 px-8">
+        <main className="container py-12 px-10">
             <h1 className="text-xl mb-8 boldmb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white"> Friend Requests</h1>
             <div className="flex flex-col gap-4">
                 <FriendRequests sessionId={session.user.id} requests={incomingFriendRequests}/>

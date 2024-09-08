@@ -23,14 +23,16 @@ export async function POST(req: Request){
         if (! hasFriendRequest)
             return new Response("No Friend Request between users", {status : 400})
 
-
-        // Notfy partner of added friemd
-        pusherServer.trigger("user__"+id+"__friends", "new_friend","")
-
+        await Promise.all ( [
+            // Notfy partner of added friemd
+            pusherServer.trigger("user__"+id+"__friends", "new_friend",""),
+            pusherServer.trigger("user__"+session.user.id+"__friends", "new_friend",""),
+            db.sadd("user:" + session.user.id + ":friends", id),
+            db.sadd("user:" + id + ":friends", session.user.id),
+            db.srem("user:" + session.user.id + ":friend_requests" , id)
+        ])
         // Successfully added as friend
-        await db.sadd("user:" + session.user.id + ":friends", id)
-        await db.sadd("user:" + id + ":friends", session.user.id)
-        await db.srem("user:" + session.user.id + ":friend_requests" , id)
+
         return new Response("Ok")
         
     } catch(error){

@@ -36,7 +36,8 @@ export default async function Chat({params} : PageProps){
     if (session.user.id !== userId1 && session.user.id !== userId2 )
         notFound()
     const chatPartnerId = session.user.id === userId1 ? userId2 : userId1
-    const chatPartner = await db.get("user:"+ chatPartnerId) as User 
+    const chatPartnerRaw = await redis_helper("get/user:"+ chatPartnerId) as string 
+    const chatPartner = JSON.parse(chatPartnerRaw) as User
     const initialMessages = await getChatMessages(chatId)
 
     return (

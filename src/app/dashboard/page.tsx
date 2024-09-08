@@ -3,10 +3,10 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import React from "react";
 import { getFriendsByUserId } from "./layout";
-import { redis_helper } from "../api/friends/add/route";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import redis_helper from "../helper/RedisHelper";
 
  function chatLinkConstructor(userId1: string, userId2:string){
     const array = [userId1, userId2].sort()

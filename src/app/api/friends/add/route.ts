@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { db } from "@/lib/db"
 import { pusherServer } from "@/lib/pusher"
+import redis_helper from "@/app/helper/RedisHelper"
 
 
 export async function POST(req: Request){
@@ -53,18 +54,4 @@ export async function POST(req: Request){
     } catch(error:any){
         console.log(error.message)
     }
-}
-
-
-// helper function
-export async function redis_helper(command:string , ...args: (string|number)[]){
-    const RESTResponse = await fetch(process.env.UPSTASH_REDIS_REST_URL+"/" + command,
-        {
-            headers : {
-                Authorization : "Bearer " + process.env.UPSTASH_REDIS_REST_TOKEN
-            },
-            cache : "no-store"
-        })  
-        const data = await RESTResponse.json() 
-        return data.result
 }

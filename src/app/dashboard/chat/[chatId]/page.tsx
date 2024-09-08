@@ -1,4 +1,4 @@
-import { redis_helper } from "@/app/api/friends/add/route"
+import redis_helper from "@/app/helper/RedisHelper"
 import ChatInput from "@/components/ChatInput"
 import Messages from "@/components/Messages"
 import { authOptions } from "@/lib/auth"

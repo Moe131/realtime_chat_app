@@ -1,8 +1,8 @@
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
-import { redis_helper } from "../../friends/add/route"
 import { db } from "@/lib/db"
 import { pusherServer } from "@/lib/pusher"
+import redis_helper from "@/app/helper/RedisHelper"
 
 export async function POST(req: Request){
     try {

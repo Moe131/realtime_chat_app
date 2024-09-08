@@ -1,4 +1,4 @@
-import { redis_helper } from "@/app/api/friends/add/route";
+import redis_helper from "@/app/helper/RedisHelper";
 import FriendRequests from "@/components/FriendRequests";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";

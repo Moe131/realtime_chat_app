@@ -7,9 +7,9 @@ import logo from "../../assets/logo.png"
 import addIcon from "../../assets/addIcon.png"
 import Image, { StaticImageData } from "next/image"
 import SignOutButton from "@/components/SignOutButton"
-import { redis_helper } from "../api/friends/add/route"
 import SidebarChatList from "@/components/SidebarChatList"
 import FriendRequestSidebar from "@/components/FriendRequestSidebar"
+import redis_helper from "../helper/RedisHelper"
 
 interface LayoutProps {
     children : ReactNode
